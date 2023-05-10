@@ -1,0 +1,468 @@
+{
+  "info": {
+    "title": "Shipment Tracking API",
+    "version": "0.1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/shipment-tracking/v1",
+      "description": "Mock server"
+    }
+  ],
+  "paths": {
+    "/shipmentTrackings": {
+      "get": {
+        "tags": [
+          "ShipmentTracking"
+        ],
+        "operationId": "searchShipmentTrackings",
+        "parameters": [
+          {
+            "allowEmptyValue": true,
+            "name": "orderId",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "allowEmptyValue": true,
+            "name": "trackingCode",
+            "description": "Shipment tracking code",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "allowEmptyValue": true,
+            "name": "statuses",
+            "description": "Comma delimited list of statuses",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "allowEmptyValue": true,
+            "name": "receiver.id",
+            "description": "Party ID of a receiver",
+            "schema": {
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "allowEmptyValue": true,
+            "name": "statusChangeDate.gte",
+            "description": "Status change date after this timestamp",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "allowEmptyValue": true,
+            "name": "statusChangeDate.lte",
+            "description": "Status change date before this timestamp",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "in": "query"
+          },
+          {
+            "allowEmptyValue": true,
+            "name": "offset",
+            "schema": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "in": "query"
+          },
+          {
+            "allowEmptyValue": true,
+            "name": "limit",
+            "schema": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search finished",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ShipmentTracking"
+                  },
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Wrong input parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ShipmentTracking"
+        ],
+        "operationId": "createShipmentTracking",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShipmentTracking"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "ShipmentTracking created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShipmentTracking"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/shipmentTrackings/{id}": {
+      "get": {
+        "tags": [
+          "ShipmentTracking"
+        ],
+        "operationId": "getShipmentTrackingById",
+        "responses": {
+          "200": {
+            "description": "ShipmentTracking retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShipmentTracking"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Shipment tracking not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "ShipmentTracking"
+        ],
+        "operationId": "updateShipmentTracking",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShipmentTracking"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "ShipmentTracking updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShipmentTracking"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Shipment tracking not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request parameters not valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "schema": {
+            "type": "string"
+          },
+          "in": "path",
+          "required": true
+        }
+      ]
+    }
+  },
+  "components": {
+    "schemas": {
+      "ShipmentTracking": {
+        "required": [
+          "orderId",
+          "sender",
+          "receiver",
+          "addressFrom",
+          "addressTo"
+        ],
+        "properties": {
+          "id": {
+            "description": "Internal shipment ID",
+            "type": "string"
+          },
+          "orderId": {
+            "description": "Order ID to which this shipment is based on",
+            "type": "string"
+          },
+          "carrier": {
+            "description": "Carrier that is performing the shipment",
+            "type": "string"
+          },
+          "trackingCode": {
+            "description": "Tracking code in the carrier network",
+            "type": "string"
+          },
+          "carrierTrackingUrl": {
+            "description": "URL to a public page provided by the carrier that shows tracking details for this shipment",
+            "type": "string"
+          },
+          "trackingDate": {
+            "format": "date-time",
+            "description": "Date when the shipment began to be tracked",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "initialized",
+              "inProcess",
+              "processed",
+              "shipped",
+              "inCustoms",
+              "delivered",
+              "returned",
+              "error"
+            ],
+            "description": "Current status of the package",
+            "type": "string"
+          },
+          "statusReason": {
+            "description": "Free text related to status reason, if available",
+            "type": "string"
+          },
+          "statusChangeDate": {
+            "format": "date-time",
+            "description": "Date when the tracking status last changed",
+            "type": "string"
+          },
+          "weight": {
+            "format": "int32",
+            "description": "Weight of the package in grams",
+            "type": "integer"
+          },
+          "estimatedDeliveryDate": {
+            "format": "date-time",
+            "description": "Estimated delivery date",
+            "type": "string"
+          },
+          "sender": {
+            "$ref": "#/components/schemas/Party"
+          },
+          "receiver": {
+            "$ref": "#/components/schemas/Party"
+          },
+          "addressFrom": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "addressTo": {
+            "$ref": "#/components/schemas/Address"
+          }
+        },
+        "type": "object"
+      },
+      "Address": {
+        "required": [
+          "id",
+          "addressRole",
+          "country",
+          "postcode",
+          "city",
+          "streetName",
+          "streetNr"
+        ],
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the address",
+            "type": "string"
+          },
+          "addressRole": {
+            "enum": [
+              "contact",
+              "shipment",
+              "legal"
+            ],
+            "description": "Address role",
+            "type": "string"
+          },
+          "country": {
+            "description": "Country(ISO 3166-1 alpha-3 digit code) that the address is in",
+            "type": "string"
+          },
+          "postcode": {
+            "description": "Descriptor for a postal delivery area, used to speed and simplify the delivery of mail (also known as zipcode)",
+            "type": "string"
+          },
+          "city": {
+            "description": "City that the address is in",
+            "type": "string"
+          },
+          "locality": {
+            "description": "Locality (suburb, principality, ...)",
+            "type": "string"
+          },
+          "streetName": {
+            "description": "Name of the street",
+            "type": "string"
+          },
+          "streetNr": {
+            "description": "Number identifying a specific property on a public street.",
+            "type": "string"
+          },
+          "streetSuffix": {
+            "description": "A modifier denoting a relative direction",
+            "type": "string"
+          },
+          "note": {
+            "description": "Custom note linked to the address",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "Contact": {
+        "required": [
+          "type",
+          "number"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "mobile",
+              "fixed"
+            ],
+            "description": "Contact type",
+            "type": "string"
+          },
+          "number": {
+            "example": "+38599123123",
+            "description": "Contact number",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "Party": {
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "description": "Unique identifier of the party",
+            "type": "string"
+          },
+          "firstName": {
+            "description": "Individual first name",
+            "type": "string"
+          },
+          "lastName": {
+            "description": "Individual last name",
+            "type": "string"
+          },
+          "companyName": {
+            "description": "Company name",
+            "type": "string"
+          },
+          "contacts": {
+            "items": {
+              "$ref": "#/components/schemas/Contact"
+            },
+            "description": "Party contacts",
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "Error": {
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "description": "Error code",
+            "type": "string"
+          },
+          "message": {
+            "description": "Error message",
+            "type": "string"
+          },
+          "reason": {
+            "description": "Error reason",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      }
+    }
+  },
+  "openapi": "3.0.3"
+}
